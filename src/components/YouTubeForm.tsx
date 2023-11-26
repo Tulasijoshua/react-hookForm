@@ -35,8 +35,10 @@ const YouTubeForm = () => {
       age: 0,
       dob: new Date()
     },
+    mode: "onSubmit"
+    // modes: onChange, onSubmit, all, onTouched, onBlur
   })
-  const { register, control, handleSubmit, formState, watch, getValues, setValue, reset } = form
+  const { register, control, handleSubmit, formState, watch, getValues, setValue, reset, trigger } = form
   const { errors, touchedFields, dirtyFields, isDirty, isValid, isSubmitting, isSubmitted, isSubmitSuccessful, submitCount } = formState
 
   console.log({isSubmitting, isSubmitted, isSubmitSuccessful, submitCount})
@@ -118,6 +120,11 @@ const YouTubeForm = () => {
               },
               notBlackListed: (fieldValue) => {
                 return !fieldValue.endsWith("baddomain.com") || "This domain is not supported"
+              },
+              emailAvailable: async (fieldValue) => {
+                const response = await fetch(`https://jsonplaceholder.typicode.com/users?email=${fieldValue}`)
+                const data = await response.json()
+                return data.length == 0 || "Email already exist";
               }
             }
           })} />
@@ -234,6 +241,7 @@ const YouTubeForm = () => {
         <button type="button" onClick={() => reset()}>Reset</button>
         <button type="button" onClick={handleGetValues}>Get values</button>
         <button type="button" onClick={handleSetValue}>Set values</button>
+        <button type="button" onClick={() => trigger("channel")}>Validate</button>
       </form>
       <DevTool control={control} />
     </div>
